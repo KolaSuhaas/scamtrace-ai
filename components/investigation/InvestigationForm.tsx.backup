@@ -23,7 +23,7 @@ import type {
   RiskSignal,
 } from "@/types/analysis";
 
-import { detectMessageSignals, type SignalKey } from "@/lib/risk/signals";
+import { detectMessageSignals } from "@/lib/risk/signals";
 import { evaluateRisk } from "@/lib/risk/risk-engine";
 import { analyzeUrl } from "@/lib/url/analyzer";
 
@@ -74,6 +74,7 @@ export default function InvestigationForm() {
         }
       }
 
+      const risk = evaluateRisk(detectedSignals);
 
       const aiSignals: RiskSignal[] = data.analysis.signals.map(
         (signal: {
@@ -93,39 +94,6 @@ export default function InvestigationForm() {
           severity: signal.severity,
         })
       );
-
-      const aiDetectedSignals: SignalKey[] = [];
-
-      for (const signal of aiSignals) {
-        const text = `${signal.category} ${signal.title} ${signal.explanation}`.toLowerCase();
-
-        if (text.includes("payment") || text.includes("fee") || text.includes("deposit"))
-          aiDetectedSignals.push("PAYMENT_REQUEST");
-
-        if (text.includes("credential") || text.includes("otp") || text.includes("password") || text.includes("bank detail"))
-          aiDetectedSignals.push("CREDENTIAL_REQUEST");
-
-        if (text.includes("urgent") || text.includes("urgency") || text.includes("pressure") || text.includes("immediate"))
-          aiDetectedSignals.push("URGENCY");
-
-        if (text.includes("impersonat") || text.includes("fake recruiter") || text.includes("pretending"))
-          aiDetectedSignals.push("IMPERSONATION");
-
-        if (text.includes("domain mismatch") || text.includes("suspicious domain"))
-          aiDetectedSignals.push("DOMAIN_MISMATCH");
-
-        if (text.includes("salary") || text.includes("unrealistic compensation") || text.includes("unrealistic pay"))
-          aiDetectedSignals.push("SALARY_ANOMALY");
-
-        if (text.includes("suspicious language") || text.includes("guaranteed job") || text.includes("guaranteed internship"))
-          aiDetectedSignals.push("SUSPICIOUS_LANGUAGE");
-      }
-
-      const combinedSignals = [
-        ...new Set([...detectedSignals, ...aiDetectedSignals]),
-      ];
-
-      const risk = evaluateRisk(combinedSignals);
 
       const finalResult: InvestigationResultType = {
         claimedOrganization: data.analysis.claimedOrganization,
