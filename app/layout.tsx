@@ -1,8 +1,12 @@
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata = {
-  title: "ScamTrace AI",
-  description: "AI-powered scam investigation engine",
+  title: "CHAKSH | See. Verify. Trust.",
+  description: "AI-powered digital threat intelligence for suspicious messages and URLs.",
 };
 
 export default function RootLayout({
@@ -11,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body>{children}</body>
     </html>
   );
